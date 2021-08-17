@@ -1,4 +1,5 @@
 import firebase from "firebase";
+import { toast } from "./toast";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBwJNi6_VfBthcH983er3x2IQAEdHkr65c",
@@ -15,12 +16,50 @@ firebase.initializeApp(firebaseConfig);
 
 export async function loginUser(email: string, password: string) {
     try {
-        const response = await firebase
+        const response: any = await firebase
             .auth()
             .signInWithEmailAndPassword(email, password);
 
         console.log(response);
+        toast("You have logged in!", 2000);
+        let arr: object = {
+            isLogin: true,
+            uid: response.user.uid,
+        };
+        return arr;
     } catch (error) {
-        console.log(error);
+        toast(error.message, 2000);
+        return false;
+    }
+}
+
+export async function registerUser(email: string, password: string) {
+    try {
+        const response: any = await firebase
+            .auth()
+            .createUserWithEmailAndPassword(email, password);
+
+        let username: string = "";
+        for (let i = 0; i < response.user.email.length; i++) {
+            if (response.user.email[i] !== "@") {
+                username += response.user.email[i];
+            } else {
+                break;
+            }
+        }
+
+        firebase
+            .database()
+            .ref("users/" + response.user.uid)
+            .set({
+                fullName: username.toLowerCase(),
+                username: username.toLowerCase(),
+                email: response.user.email,
+                birthdate: Date(),
+            });
+        return true;
+    } catch (error) {
+        toast(error.message, 2000);
+        return false;
     }
 }

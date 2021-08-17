@@ -11,12 +11,45 @@ import {
 } from "@ionic/react";
 import ExploreContainer from "../components/ExploreContainer";
 import "./Register.css";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import React, { useState } from "react";
+import { toast } from "../toast";
+import { registerUser } from "../firebaseConfig";
 
 const Register: React.FC = () => {
-    const inputEmail = () => {};
-    const inputPassword = () => {};
-    const inputRPassword = () => {};
+    const history = useHistory();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [repeatPassword, setRepeatPassword] = useState();
+
+    const inputEmail = (e: any) => {
+        setEmail(e.target.value);
+    };
+    const inputPassword = (e: any) => {
+        setPassword(e.target.value);
+    };
+    const inputRPassword = (e: any) => {
+        if (password === e.target.value) {
+            setRepeatPassword(e.target.value);
+            toast("Password is match", 2000);
+        } else {
+            toast("Password do no match", 2000);
+        }
+    };
+
+    const register = () => {
+        if (password === repeatPassword) {
+            const res: any = registerUser(email, password);
+            if (res) {
+                toast("Registration successfully", 2000);
+                history.push("/login");
+            } else {
+                toast("Registration failed", 2000);
+            }
+        } else {
+            toast("Password do no match", 2000);
+        }
+    };
 
     return (
         <IonPage>
@@ -46,7 +79,9 @@ const Register: React.FC = () => {
                             type="password"
                         ></IonInput>
                     </IonItem>
-                    <IonButton color="primary">Register</IonButton>
+                    <IonButton onClick={register} color="primary">
+                        Register
+                    </IonButton>
                 </div>
                 <div className="text-center m-5 text-lg">
                     Do you have account? <Link to="/login">Login</Link>

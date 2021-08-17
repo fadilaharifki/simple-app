@@ -586,6 +586,9 @@ video {
 .justify-center {
 	justify-content: center;
 }
+.pb-5 {
+	padding-bottom: 1.25rem;
+}
 .text-center {
 	text-align: center;
 }

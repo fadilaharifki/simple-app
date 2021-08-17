@@ -11,13 +11,22 @@ import {
 } from "@ionic/react";
 import ExploreContainer from "../components/ExploreContainer";
 import "./Login.css";
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useHistory } from "react-router-dom";
 import { loginUser } from "../firebaseConfig";
 
 const Login: React.FC = () => {
+    const history = useHistory();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    useEffect(() => {
+        if (localStorage.logged) {
+            history.push("/profile");
+        } else {
+            history.push("/login");
+        }
+    }, []);
 
     const inputEmail = (e: any) => {
         setEmail(e.target.value);
@@ -28,8 +37,13 @@ const Login: React.FC = () => {
     };
 
     async function login() {
-        const res = await loginUser(email, password);
-        console.log(`${res} ? "Login Succes" : "Failed"`);
+        const res: any = await loginUser(email, password);
+        console.log(res);
+        if (res) {
+            localStorage.setItem("logged", res.isLogin);
+            localStorage.setItem("uid", res.uid);
+            history.push("/profile");
+        }
     }
 
     return (
@@ -48,7 +62,10 @@ const Login: React.FC = () => {
                     </IonItem>
                     <IonItem>
                         <IonLabel position="floating">Password</IonLabel>
-                        <IonInput onIonChange={inputPassword}></IonInput>
+                        <IonInput
+                            type="password"
+                            onIonChange={inputPassword}
+                        ></IonInput>
                     </IonItem>
                     <IonButton onClick={login} color="primary">
                         Login
