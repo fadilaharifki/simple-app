@@ -9,27 +9,18 @@ import {
     IonCardTitle,
     IonButton,
     IonCardContent,
-    IonIcon,
-    IonLabel,
-    IonTabBar,
-    IonTabButton,
-    IonRouterOutlet,
-    IonTabs,
+    useIonViewWillEnter,
 } from "@ionic/react";
-import ExploreContainer from "../components/ExploreContainer";
-import { ellipse, square, triangle } from "ionicons/icons";
-import { IonReactRouter } from "@ionic/react-router";
 import "./Profile.css";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router";
 import firebase from "firebase";
 
 const Profile: React.FC = () => {
     const history = useHistory();
     const [data, setData] = useState([]);
-    console.log(data, "ini data");
 
-    useEffect(() => {
+    useIonViewWillEnter(() => {
         if (localStorage.logged) {
             history.push("/profile");
         } else {
@@ -38,21 +29,24 @@ const Profile: React.FC = () => {
         const userRef = firebase.database().ref(`users/${localStorage.uid}`);
         let newUserState: any = [];
         userRef.on("value", (snapshot) => {
-            console.log(snapshot.val(), "snapshot");
             const dataVal = snapshot.val();
             newUserState.push({
                 fullName: dataVal.fullName,
                 username: dataVal.username,
                 email: dataVal.email,
-                birthdate: dataVal.birthdate.toLocaleString(),
+                birthdate: dataVal.birthdate,
             });
             setData(newUserState);
         });
-    }, []);
+    });
 
     const logout = () => {
         localStorage.clear();
         history.push("/login");
+    };
+
+    const toPageEdit = () => {
+        history.push("/edit", data);
     };
 
     if (!data) {
@@ -63,7 +57,12 @@ const Profile: React.FC = () => {
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                    <IonTitle>Profile</IonTitle>
+                    <div className="flex flex-row justify-between">
+                        <IonTitle>Profile</IonTitle>
+                        <div>
+                            <IonButton onClick={logout}>Logout</IonButton>
+                        </div>
+                    </div>
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
@@ -80,16 +79,17 @@ const Profile: React.FC = () => {
                                 <IonCardContent>
                                     <IonCardTitle>{e.fullName}</IonCardTitle>
                                     <div>{e.birthdate}</div>
-                                    <IonButton fill="outline" slot="end">
+                                    <IonButton
+                                        onClick={toPageEdit}
+                                        fill="outline"
+                                        slot="end"
+                                    >
                                         Edit
                                     </IonButton>
                                 </IonCardContent>
                             </IonCard>
                         );
                     })}
-                </div>
-                <div>
-                    <IonButton onClick={logout}>Logout</IonButton>
                 </div>
             </IonContent>
         </IonPage>

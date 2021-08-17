@@ -9,7 +9,6 @@ import {
     IonInput,
     IonLabel,
 } from "@ionic/react";
-import ExploreContainer from "../components/ExploreContainer";
 import "./Register.css";
 import { Link, useHistory } from "react-router-dom";
 import React, { useState } from "react";
@@ -37,19 +36,17 @@ const Register: React.FC = () => {
         }
     };
 
-    const register = () => {
+    async function register() {
         if (password === repeatPassword) {
-            const res: any = registerUser(email, password);
+            const res: any = await registerUser(email, password);
             if (res) {
                 toast("Registration successfully", 2000);
                 history.push("/login");
-            } else {
-                toast("Registration failed", 2000);
             }
         } else {
             toast("Password do no match", 2000);
         }
-    };
+    }
 
     return (
         <IonPage>

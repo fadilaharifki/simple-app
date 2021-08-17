@@ -13,6 +13,7 @@ import { ellipse, square, triangle } from "ionicons/icons";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Register from "./pages/Register";
+import Edit from "./pages/Edit";
 import "./styles/output.css";
 
 /* Core CSS required for Ionic components to work properly */
@@ -39,6 +40,9 @@ const App: React.FC = () => (
         <IonReactRouter>
             <IonTabs>
                 <IonRouterOutlet>
+                    <Route exact path="/edit">
+                        <Edit />
+                    </Route>
                     <Route exact path="/login">
                         <Login />
                     </Route>

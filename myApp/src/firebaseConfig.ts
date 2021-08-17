@@ -20,7 +20,6 @@ export async function loginUser(email: string, password: string) {
             .auth()
             .signInWithEmailAndPassword(email, password);
 
-        console.log(response);
         toast("You have logged in!", 2000);
         let arr: object = {
             isLogin: true,
@@ -55,8 +54,23 @@ export async function registerUser(email: string, password: string) {
                 fullName: username.toLowerCase(),
                 username: username.toLowerCase(),
                 email: response.user.email,
-                birthdate: Date(),
+                birthdate: new Date().toISOString().split("T")[0],
             });
+
+        return true;
+    } catch (error) {
+        toast(error.message, 2000);
+        return false;
+    }
+}
+
+export async function updateUser(uid: string, obj: object) {
+    try {
+        firebase
+            .database()
+            .ref("users/" + uid)
+            .update(obj);
+        toast("Update successfully", 2000);
         return true;
     } catch (error) {
         toast(error.message, 2000);
