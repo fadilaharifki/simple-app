@@ -583,9 +583,6 @@ video {
 .flex {
 	display: flex;
 }
-.cursor-pointer {
-	cursor: pointer;
-}
 .flex-row {
 	flex-direction: row;
 }

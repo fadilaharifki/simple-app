@@ -15,29 +15,33 @@ import "./Profile.css";
 import React, { useState } from "react";
 import { useHistory } from "react-router";
 import firebase from "firebase";
+import { toast } from "../toast";
 
 const Profile: React.FC = () => {
     const history = useHistory();
     const [data, setData] = useState([]);
 
     useIonViewWillEnter(() => {
-        if (localStorage.logged) {
+        if (localStorage.logged || localStorage.uid) {
             history.push("/profile");
+            const userRef = firebase
+                .database()
+                .ref(`users/${localStorage.uid}`);
+            let newUserState: any = [];
+            userRef.on("value", (snapshot) => {
+                const dataVal = snapshot.val();
+                newUserState.push({
+                    fullName: dataVal.fullName,
+                    username: dataVal.username,
+                    email: dataVal.email,
+                    birthdate: dataVal.birthdate,
+                });
+                setData(newUserState);
+            });
         } else {
             history.push("/login");
+            toast("Login first", 2000);
         }
-        const userRef = firebase.database().ref(`users/${localStorage.uid}`);
-        let newUserState: any = [];
-        userRef.on("value", (snapshot) => {
-            const dataVal = snapshot.val();
-            newUserState.push({
-                fullName: dataVal.fullName,
-                username: dataVal.username,
-                email: dataVal.email,
-                birthdate: dataVal.birthdate,
-            });
-            setData(newUserState);
-        });
     });
 
     const logout = () => {
